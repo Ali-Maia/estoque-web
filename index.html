@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerenciador de Estoque - Impressões 3D</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Gerenciador de Estoque - Loja 3D</h1>
+      <!-- <p>Aplicação em memória (sem banco de dados) • Página única</p> -->
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <h2 id="form-title">Cadastrar Produto</h2>
+        <form id="product-form" novalidate>
+          <input type="hidden" id="product-id" />
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="name">Nome</label>
+              <input id="name" name="name" type="text" placeholder="Ex.: Suporte de Parede" required />
+            </div>
+
+            <div class="form-field">
+              <label for="filamentType">Tipo de filamento</label>
+              <input id="filamentType" name="filamentType" type="text" placeholder="Ex.: PLA, ABS, PETG..." required />
+            </div>
+
+            <div class="form-field">
+              <label for="colors">Cores</label>
+              <input id="colors" name="colors" type="text" placeholder="Ex.: preto, branco" required />
+            </div>
+
+            <div class="form-field">
+              <label for="image">Imagem do produto (opcional)</label>
+              <input id="image" name="image" type="file" accept="image/*" />
+              <div class="inline-field">
+                <input id="remove-image" type="checkbox" />
+                <label for="remove-image">Remover imagem atual</label>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="weight">Peso (g)</label>
+              <input id="weight" name="weight" type="number" min="0" step="0.01" placeholder="Ex.: 120" required />
+            </div>
+
+            <div class="form-field">
+              <label for="dimensions">Dimensões</label>
+              <input id="dimensions" name="dimensions" type="text" placeholder="Ex.: 10 x 8 x 5 cm" required />
+            </div>
+
+            <div class="form-field">
+              <label for="price">Preço (R$)</label>
+              <input id="price" name="price" type="number" min="0" step="0.01" placeholder="Ex.: 49,90" required />
+            </div>
+
+            <div class="form-field">
+              <label for="quantity">Quantidade inicial</label>
+              <input id="quantity" name="quantity" type="number" min="0" step="1" placeholder="Ex.: 10" required />
+            </div>
+
+            <div class="form-field form-field--full">
+              <label for="description">Descrição</label>
+              <textarea id="description" name="description" rows="3" placeholder="Detalhes do produto" required></textarea>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="submit-button">Salvar produto</button>
+            <button type="button" class="btn btn-ghost" id="cancel-edit" hidden>Cancelar edição</button>
+            <span class="form-hint" id="form-hint"></span>
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Produtos</h2>
+          <div class="legend">
+            <span class="badge badge-success">Disponível</span>
+            <span class="badge badge-danger">Indisponível</span>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table" id="products-table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Imagem</th>
+                <th>Tipo</th>
+                <th>Cores</th>
+                <th>Peso</th>
+                <th>Dimensões</th>
+                <th>Preço</th>
+                <th>Quantidade</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="products-tbody">
+              <!-- Linhas geradas dinamicamente -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <small><a href="https://github.com/Ali-Maia">Ali-Maia</a></small>
+    </footer>
+
+    <script src="app.js" defer></script>
+  </body>
+  </html>
+
+
