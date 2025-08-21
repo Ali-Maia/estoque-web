@@ -22,6 +22,28 @@
     description: document.getElementById('description'),
     image: document.getElementById('image'),
     removeImage: document.getElementById('remove-image'),
+    // Elementos dos modais
+    deleteModal: document.getElementById('delete-modal'),
+    deleteProductName: document.getElementById('delete-product-name'),
+    deleteModalHint: document.getElementById('delete-modal-hint'),
+    confirmDelete: document.getElementById('confirm-delete'),
+    buyModal: document.getElementById('buy-modal'),
+    buyProductName: document.getElementById('buy-product-name'),
+    buyProductImage: document.getElementById('buy-product-image'),
+    buyProductPrice: document.getElementById('buy-product-price'),
+    buyProductStock: document.getElementById('buy-product-stock'),
+    buyQuantity: document.getElementById('buy-quantity'),
+    buyTotalPrice: document.getElementById('buy-total-price'),
+    buyModalHint: document.getElementById('buy-modal-hint'),
+    confirmBuy: document.getElementById('confirm-buy'),
+    restockModal: document.getElementById('restock-modal'),
+    restockProductName: document.getElementById('restock-product-name'),
+    restockProductImage: document.getElementById('restock-product-image'),
+    restockCurrentStock: document.getElementById('restock-current-stock'),
+    restockQuantity: document.getElementById('restock-quantity'),
+    restockNewStock: document.getElementById('restock-new-stock'),
+    restockModalHint: document.getElementById('restock-modal-hint'),
+    confirmRestock: document.getElementById('confirm-restock'),
   };
 
   const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -306,51 +328,115 @@
     const row = ev.target.closest('tr[data-id]');
     if (!row) return;
     const productId = parseInt(row.getAttribute('data-id'), 10);
+    const product = products.find(p => p.id === productId);
     const action = button.getAttribute('data-action');
 
     if (action === 'delete') {
-      const confirmed = confirm('Excluir este produto? Esta ação não pode ser desfeita.');
-      if (!confirmed) return;
-      deleteProduct(productId); // RN06
-      persist();
-      renderProducts();
+      if (!product) { showError('Produto não encontrado.'); return; }
+      showDeleteModal(product);
       return;
     }
 
     if (action === 'edit') {
-      const product = products.find(p => p.id === productId);
       if (!product) { showError('Produto não encontrado.'); return; }
       fillForm(product); // RN05
       return;
     }
 
     if (action === 'buy') {
-      const defaultQuantity = 1;
-      const input = prompt('Quantidade a comprar:', String(defaultQuantity));
-      if (input === null) return;
-      const result = purchaseProduct(productId, input); // RN07, RN08
-      if (!result.ok) {
-        showError(result.message);
-      } else {
-        clearHint();
-      }
-      persist();
-      renderProducts();
+      if (!product) { showError('Produto não encontrado.'); return; }
+      showBuyModal(product);
       return;
     }
 
     if (action === 'restock') {
-      const input = prompt('Quantidade para reabastecer:', '1');
-      if (input === null) return;
-      const result = restockProduct(productId, input); // RN09
-      if (!result.ok) {
-        showError(result.message);
-      } else {
-        clearHint();
-      }
+      if (!product) { showError('Produto não encontrado.'); return; }
+      showRestockModal(product);
+      return;
+    }
+  });
+
+  // Event listeners para os modais
+  // Modal de exclusão
+  elements.confirmDelete.addEventListener('click', () => {
+    const productId = parseInt(elements.deleteModal.dataset.productId);
+    if (deleteProduct(productId)) {
+      hideModal('delete-modal');
+      showSuccess('Produto excluído com sucesso.');
       persist();
       renderProducts();
+    } else {
+      showModalError(elements.deleteModalHint, 'Erro ao excluir produto.');
+    }
+  });
+
+  // Modal de compra
+  elements.confirmBuy.addEventListener('click', () => {
+    const productId = parseInt(elements.buyModal.dataset.productId);
+    const quantity = parseInt(elements.buyQuantity.value);
+    
+    if (!quantity || quantity <= 0) {
+      showModalError(elements.buyModalHint, 'Informe uma quantidade válida para compra.');
       return;
+    }
+    
+    const result = purchaseProduct(productId, quantity);
+    if (result.ok) {
+      hideModal('buy-modal');
+      showSuccess(`Compra realizada com sucesso! ${quantity} unidade(s) removida(s) do estoque.`);
+      persist();
+      renderProducts();
+    } else {
+      showModalError(elements.buyModalHint, result.message);
+    }
+  });
+
+  // Modal de reabastecimento
+  elements.confirmRestock.addEventListener('click', () => {
+    const productId = parseInt(elements.restockModal.dataset.productId);
+    const quantity = parseInt(elements.restockQuantity.value);
+    
+    if (!quantity || quantity <= 0) {
+      showModalError(elements.restockModalHint, 'Informe uma quantidade válida para reabastecimento.');
+      return;
+    }
+    
+    const result = restockProduct(productId, quantity);
+    if (result.ok) {
+      hideModal('restock-modal');
+      showSuccess(`Reabastecimento realizado com sucesso! ${quantity} unidade(s) adicionada(s) ao estoque.`);
+      persist();
+      renderProducts();
+    } else {
+      showModalError(elements.restockModalHint, result.message);
+    }
+  });
+
+  // Event listeners para fechar modais
+  document.addEventListener('click', (ev) => {
+    // Fechar modal ao clicar no botão de fechar ou botão cancelar
+    if (ev.target.matches('[data-modal]')) {
+      const modalId = ev.target.getAttribute('data-modal');
+      hideModal(modalId);
+      clearAllModalHints();
+    }
+    
+    // Fechar modal ao clicar fora do conteúdo
+    if (ev.target.classList.contains('modal')) {
+      ev.target.hidden = true;
+      clearAllModalHints();
+    }
+  });
+
+  // Event listeners para atualizar totais em tempo real
+  elements.buyQuantity.addEventListener('input', updateBuyTotal);
+  elements.restockQuantity.addEventListener('input', updateRestockTotal);
+
+  // Fechar modais com tecla ESC
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Escape') {
+      hideAllModals();
+      clearAllModalHints();
     }
   });
 
@@ -391,6 +477,138 @@
       reader.onerror = (e) => reject(e);
       reader.readAsDataURL(file);
     });
+  }
+
+  // Funções para gerenciar modais
+  function showModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.hidden = false;
+      // Limpar mensagens anteriores
+      const modalHint = modal.querySelector('.modal-hint');
+      if (modalHint) {
+        clearModalHint(modalHint);
+      }
+      // Foco no primeiro input do modal se existir
+      const firstInput = modal.querySelector('input');
+      if (firstInput) firstInput.focus();
+    }
+  }
+
+  function hideModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.hidden = true;
+    }
+  }
+
+  function hideAllModals() {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+      modal.hidden = true;
+    });
+  }
+
+  // Função para mostrar modal de exclusão
+  function showDeleteModal(product) {
+    elements.deleteProductName.textContent = product.name;
+    elements.deleteModal.dataset.productId = product.id;
+    clearModalHint(elements.deleteModalHint);
+    showModal('delete-modal');
+  }
+
+  // Função para mostrar modal de compra
+  function showBuyModal(product) {
+    elements.buyProductName.textContent = product.name;
+    elements.buyProductPrice.textContent = currency.format(product.price);
+    elements.buyProductStock.textContent = product.quantity;
+    elements.buyQuantity.value = '1';
+    elements.buyQuantity.max = product.quantity;
+    
+    if (product.imageDataUrl) {
+      elements.buyProductImage.src = product.imageDataUrl;
+      elements.buyProductImage.alt = product.name;
+      elements.buyProductImage.style.display = 'block';
+    } else {
+      elements.buyProductImage.style.display = 'none';
+    }
+    
+    clearModalHint(elements.buyModalHint);
+    updateBuyTotal();
+    elements.buyModal.dataset.productId = product.id;
+    showModal('buy-modal');
+  }
+
+  // Função para mostrar modal de reabastecimento
+  function showRestockModal(product) {
+    elements.restockProductName.textContent = product.name;
+    elements.restockCurrentStock.textContent = product.quantity;
+    elements.restockQuantity.value = '1';
+    
+    if (product.imageDataUrl) {
+      elements.restockProductImage.src = product.imageDataUrl;
+      elements.restockProductImage.alt = product.name;
+      elements.restockProductImage.style.display = 'block';
+    } else {
+      elements.restockProductImage.style.display = 'none';
+    }
+    
+    clearModalHint(elements.restockModalHint);
+    updateRestockTotal();
+    elements.restockModal.dataset.productId = product.id;
+    showModal('restock-modal');
+  }
+
+  // Função para atualizar total da compra
+  function updateBuyTotal() {
+    const quantity = parseInt(elements.buyQuantity.value) || 0;
+    const productId = parseInt(elements.buyModal.dataset.productId);
+    const product = products.find(p => p.id === productId);
+    
+    if (product && quantity > 0) {
+      const total = product.price * quantity;
+      elements.buyTotalPrice.textContent = currency.format(total);
+    }
+  }
+
+  // Função para atualizar novo estoque
+  function updateRestockTotal() {
+    const quantity = parseInt(elements.restockQuantity.value) || 0;
+    const productId = parseInt(elements.restockModal.dataset.productId);
+    const product = products.find(p => p.id === productId);
+    
+    if (product && quantity > 0) {
+      const newStock = product.quantity + quantity;
+      elements.restockNewStock.textContent = newStock;
+    }
+  }
+
+  // Funções para gerenciar mensagens dos modais
+  function clearModalHint(modalHintElement) {
+    if (modalHintElement) {
+      modalHintElement.textContent = '';
+      modalHintElement.className = 'modal-hint';
+    }
+  }
+
+  function showModalError(modalHintElement, message) {
+    if (modalHintElement) {
+      modalHintElement.textContent = message;
+      modalHintElement.className = 'modal-hint error';
+    }
+  }
+
+  function showModalSuccess(modalHintElement, message) {
+    if (modalHintElement) {
+      modalHintElement.textContent = message;
+      modalHintElement.className = 'modal-hint success';
+    }
+  }
+
+  function clearAllModalHints() {
+    clearModalHint(elements.deleteModalHint);
+    clearModalHint(elements.buyModalHint);
+    clearModalHint(elements.restockModalHint);
   }
 
   hydrate();

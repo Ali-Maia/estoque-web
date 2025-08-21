@@ -1,68 +1,122 @@
-## Gerenciador de Estoque (SPA em memória)
+# Gerenciador de Estoque - Loja 3D
 
-Aplicação Web de página única (HTML, CSS e JavaScript puro) para gerenciar estoque de produtos de impressão 3D. Todos os dados rodam em memória e são persistidos apenas no `localStorage` do navegador.
+Uma aplicação web para gerenciar o estoque de produtos de impressão 3D, desenvolvida em JavaScript puro com interface moderna e responsiva.
 
-### Funcionalidades
+## Funcionalidades
 
-- Cadastro de produto com: nome, descrição, tipo de filamento, cores, peso, dimensões, preço e quantidade inicial (RN01, RN02)
-- Validações: preço e quantidade não negativos (RN03, RN04)
-- Edição de qualquer campo do produto (RN05)
-- Exclusão de produto (RN06)
-- Compra reduz estoque automaticamente (RN07)
-- Produto com quantidade 0: exibido como "Indisponível" e compra desabilitada (RN08)
-- Reabastecimento soma à quantidade atual (RN09)
-- Persistência no `localStorage`
-- Imagem do produto (opcional), com miniatura na tabela e opção de remover na edição
+### 🏷️ Cadastro e Edição de Produtos
+- Formulário completo para cadastro de produtos
+- Edição de produtos existentes
+- Validação de campos obrigatórios
+- Upload de imagens dos produtos
+- Persistência local no navegador
 
-### Tecnologias
+### 📊 Visualização de Estoque
+- Tabela responsiva com todos os produtos
+- Status visual (disponível/indisponível)
+- Informações detalhadas: nome, tipo de filamento, cores, peso, dimensões, preço e quantidade
+- Imagens em miniatura dos produtos
 
-- HTML5 + CSS3 + JavaScript
-- Persistência local: `localStorage`
+### 🛒 Sistema de Compra
+- **Modal de Compra**: Interface intuitiva para realizar compras
+- Seleção de quantidade com validação
+- Cálculo automático do total
+- Verificação de disponibilidade em estoque
+- Atualização automática do estoque após compra
 
-### Estrutura
+### 📦 Sistema de Reabastecimento
+- **Modal de Reabastecimento**: Interface para adicionar produtos ao estoque
+- Seleção de quantidade a adicionar
+- Visualização do estoque atual e futuro
+- Atualização automática do estoque
+
+### 🗑️ Sistema de Exclusão
+- **Modal de Confirmação**: Confirmação segura antes de excluir produtos
+- Aviso de que a ação não pode ser desfeita
+- Exclusão segura com validação
+
+## Interface dos Modais
+
+### Modal de Compra
+- Exibe informações do produto (nome, imagem, preço, estoque disponível)
+- Campo para inserir quantidade desejada
+- Cálculo automático do total em tempo real
+- Validação de quantidade disponível
+- Botões de confirmação e cancelamento
+
+### Modal de Reabastecimento
+- Exibe informações do produto (nome, imagem, estoque atual)
+- Campo para inserir quantidade a adicionar
+- Cálculo automático do novo estoque em tempo real
+- Botões de confirmação e cancelamento
+
+### Modal de Exclusão
+- Confirmação com nome do produto
+- Aviso de que a ação é irreversível
+- Botões de confirmação e cancelamento
+
+## Características Técnicas
+
+### 🎨 Design
+- Interface moderna com tema escuro
+- Animações suaves nos modais
+- Design responsivo para dispositivos móveis
+- Cores consistentes e acessíveis
+
+### ⌨️ Usabilidade
+- Fechamento de modais com tecla ESC
+- Foco automático nos campos de entrada
+- Fechamento ao clicar fora do modal
+- Validação em tempo real
+
+### 📱 Responsividade
+- Adaptação para diferentes tamanhos de tela
+- Layout otimizado para dispositivos móveis
+- Modais responsivos com scroll quando necessário
+
+## Como Usar
+
+1. **Cadastrar Produto**: Preencha o formulário e clique em "Salvar produto"
+2. **Editar Produto**: Clique no botão "Editar" na linha do produto desejado
+3. **Comprar Produto**: Clique em "Comprar" e use o modal para selecionar quantidade
+4. **Reabastecer**: Clique em "Reabastecer" e use o modal para adicionar estoque
+5. **Excluir Produto**: Clique em "Excluir" e confirme no modal de confirmação
+
+## Tecnologias Utilizadas
+
+- **HTML5**: Estrutura semântica
+- **CSS3**: Estilos modernos com variáveis CSS e flexbox
+- **JavaScript ES6+**: Funcionalidades e lógica de negócio
+- **LocalStorage**: Persistência de dados local
+
+## Estrutura do Projeto
 
 ```
 web-estoque/
-├─ index.html     # Marcações e layout da SPA
-├─ styles.css     # Estilos da interface
-├─ app.js         # Lógica de produtos, validações, UI e persistência
-└─ README.md      # Este documento
+├── index.html          # Interface principal
+├── app.js             # Lógica da aplicação
+├── styles.css         # Estilos e responsividade
+└── README.md          # Documentação
 ```
 
-### Executando localmente
+## Executando o Projeto
 
-1. Baixe/clonar este repositório.
-2. Abra o arquivo `web-estoque/index.html` no navegador (duplo clique).
+1. Clone ou baixe os arquivos
+2. Abra o arquivo `index.html` em um navegador moderno
+3. Ou execute um servidor local: `python -m http.server 8000`
 
-Não há necessidade de servidor ou dependências.
+## Requisitos
 
-### Uso
+- Navegador com suporte a ES6+
+- JavaScript habilitado
+- LocalStorage disponível
 
-- Preencha o formulário e clique em "Salvar produto".
-- Para editar, clique em "Editar", ajuste e "Atualizar produto" (ou "Cancelar edição").
-- Para excluir, clique em "Excluir".
-- Para comprar, clique em "Comprar" e informe a quantidade (se o produto estiver disponível).
-- Para reabastecer, clique em "Reabastecer" e informe a quantidade a adicionar.
-- Imagem do produto é opcional: selecione um arquivo no campo de imagem. Na edição, marque "Remover imagem atual" para excluí-la.
+## Desenvolvedor
 
-Observação: as alterações ficam salvas no `localStorage` do navegador atual. Limpando os dados do site, os produtos serão apagados.
+Desenvolvido por [Ali-Maia](https://github.com/Ali-Maia)
 
-### Regras atendidas
+---
 
-| ID   | Regra                              | Como foi atendida |
-| ---- | ---------------------------------- | ------------------ |
-| RN01 | Cadastro obrigatório de produto    | Formulário exige campos e validações |
-| RN02 | Quantidade inicial obrigatória     | Campo obrigatório e validado como inteiro >= 0 |
-| RN03 | Quantidade não negativa            | Validação no formulário e nas operações |
-| RN04 | Preço válido                       | Validado como número >= 0 |
-| RN05 | Edição de produto                  | "Editar" preenche o formulário e salva alterações |
-| RN06 | Exclusão de produto                | "Excluir" remove da lista |
-| RN07 | Atualização automática de estoque  | "Comprar" reduz a quantidade |
-| RN08 | Produto indisponível               | Quantidade 0 exibe "Indisponível" e desabilita comprar |
-| RN09 | Reabastecimento de produto         | "Reabastecer" soma ao estoque |
-
-### Licença
-
-Uso livre para fins educacionais e demonstração.
+**Nota**: Esta é uma aplicação de demonstração que utiliza armazenamento local do navegador. Os dados são mantidos apenas na sessão atual e podem ser perdidos ao limpar o cache.
 
 
