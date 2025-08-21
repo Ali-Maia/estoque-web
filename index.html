@@ -114,6 +114,92 @@
       <small><a href="https://github.com/Ali-Maia">Ali-Maia</a></small>
     </footer>
 
+    <!-- Modal de Exclusão -->
+    <div id="delete-modal" class="modal" hidden>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Confirmar Exclusão</h3>
+          <button class="modal-close" data-modal="delete-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>Tem certeza que deseja excluir o produto <strong id="delete-product-name"></strong>?</p>
+          <p class="warning-text">Esta ação não pode ser desfeita.</p>
+          <div class="modal-hint" id="delete-modal-hint"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" data-modal="delete-modal">Cancelar</button>
+          <button class="btn btn-danger" id="confirm-delete">Excluir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Compra -->
+    <div id="buy-modal" class="modal" hidden>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Comprar Produto</h3>
+          <button class="modal-close" data-modal="buy-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="product-info">
+            <div class="product-image">
+              <img id="buy-product-image" src="" alt="" />
+            </div>
+            <div class="product-details">
+              <h4 id="buy-product-name"></h4>
+              <p><strong>Preço:</strong> <span id="buy-product-price"></span></p>
+              <p><strong>Estoque disponível:</strong> <span id="buy-product-stock"></span></p>
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="buy-quantity">Quantidade a comprar:</label>
+            <input id="buy-quantity" type="number" min="1" value="1" />
+          </div>
+          <div class="total-info">
+            <p><strong>Total:</strong> <span id="buy-total-price"></span></p>
+          </div>
+          <div class="modal-hint" id="buy-modal-hint"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" data-modal="buy-modal">Cancelar</button>
+          <button class="btn btn-success" id="confirm-buy">Confirmar Compra</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Reabastecimento -->
+    <div id="restock-modal" class="modal" hidden>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Reabastecer Produto</h3>
+          <button class="modal-close" data-modal="restock-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="product-info">
+            <div class="product-image">
+              <img id="restock-product-image" src="" alt="" />
+            </div>
+            <div class="product-details">
+              <h4 id="restock-product-name"></h4>
+              <p><strong>Estoque atual:</strong> <span id="restock-current-stock"></span></p>
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="restock-quantity">Quantidade para adicionar:</label>
+            <input id="restock-quantity" type="number" min="1" value="1" />
+          </div>
+          <div class="total-info">
+            <p><strong>Novo estoque:</strong> <span id="restock-new-stock"></span></p>
+          </div>
+          <div class="modal-hint" id="restock-modal-hint"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" data-modal="restock-modal">Cancelar</button>
+          <button class="btn btn-primary" id="confirm-restock">Confirmar Reabastecimento</button>
+        </div>
+      </div>
+    </div>
+
     <script src="app.js" defer></script>
   </body>
   </html>
